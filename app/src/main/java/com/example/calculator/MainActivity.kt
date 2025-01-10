@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.KeyboardType.Companion.Decimal
 import androidx.compose.ui.tooling.preview.Preview
@@ -96,9 +97,11 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
     Column (modifier = Modifier.fillMaxSize()){
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.3f)) {
             TextField(
+                textStyle = TextStyle(fontSize = 40.sp),
                 value = uInput,
                 onValueChange = { newValue -> uInput = newValue },
                 modifier = Modifier.fillMaxWidth()
+                    .fillMaxSize(0.6f)
                     .focusProperties {
                         canFocus = false
                     },
@@ -140,6 +143,7 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                         secNum = ""
                         uInput = ""
                         calcOpr = '='
+                        isFirstNum = true
                         solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
                     }) {
                     Text(text = "AC", fontSize = textScale, modifier = Modifier.padding(0.dp))
@@ -164,7 +168,19 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        if(isFirstNum)priNum = priNum.dropLast(1)
+                        else{
+                            if(operators.contains(uInput.last()))calcOpr = '=' else {
+                                if(!secNum.isEmpty())secNum = secNum.dropLast(1) else {
+                                    isFirstNum = true
+                                    priNum = priNum.dropLast(1)
+                                }
+                            }
+                        }
+                        uInput = uInput.dropLast(1)
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                         contentDescription = "Backspace")
                 }
