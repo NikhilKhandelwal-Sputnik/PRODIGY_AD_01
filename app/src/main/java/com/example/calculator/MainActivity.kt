@@ -54,27 +54,50 @@ class MainActivity : ComponentActivity() {
 }
 
 fun Add(firstNum: String, secondNum: String): String {
-    return (firstNum.toDouble() + secondNum.toDouble()).toString()
+    if(secondNum == "")return firstNum
+    else return (firstNum.toDouble() + secondNum.toDouble()).toString()
 }
 fun Subtract(firstNum: String, secondNum: String): String {
-    return (firstNum.toDouble() - secondNum.toDouble()).toString()
+    if(secondNum == "")return firstNum
+    else return (firstNum.toDouble() - secondNum.toDouble()).toString()
 }
 fun Multiply(firstNum: String, secondNum: String): String {
-    return (firstNum.toDouble() * secondNum.toDouble()).toString()
+    if(secondNum == "")return firstNum
+    else return (firstNum.toDouble() * secondNum.toDouble()).toString()
 }
 fun Divide(firstNum: String, secondNum: String): String {
-    return (firstNum.toDouble() / secondNum.toDouble()).toString()
+    if(secondNum == "")return firstNum
+    else return (firstNum.toDouble() / secondNum.toDouble()).toString()
+}
+fun Percent(firstNum: String, secondNum: String): String {
+    if(secondNum == "")return firstNum
+    else return ((firstNum.toDouble() / secondNum.toDouble())*100).toString()
 }
 
+fun chkSolution(pNum:String, sNum:String, symbol:Char): String{
+    when(symbol) {
+        '+' -> return Add(firstNum = pNum, secondNum = sNum)
+        '-' -> return Subtract(firstNum = pNum, secondNum = sNum)
+        '*' -> return Multiply(firstNum = pNum, secondNum = sNum)
+        '/' -> return Divide(firstNum = pNum, secondNum = sNum)
+        '%' -> return Percent(firstNum = pNum, secondNum = sNum)
+        else -> return ""
+    }
+}
 @Composable
 fun CalculatorApp( modifier: Modifier = Modifier) {
-    var firstNum by remember { mutableStateOf("") }
-    var secondNum by remember { mutableStateOf("") }
+    val operators = "+-*/%"
+    var priNum by remember { mutableStateOf("") }
+    var secNum by remember { mutableStateOf("") }
+    var solution by remember { mutableStateOf("") }
+    var uInput by remember { mutableStateOf("") }
+    var isFirstNum by remember { mutableStateOf(true)}
+    var calcOpr by remember { mutableStateOf('=')}
     Column (modifier = Modifier.fillMaxSize()){
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.3f)) {
             TextField(
-                value = firstNum,
-                onValueChange = { newValue -> firstNum = newValue },
+                value = uInput,
+                onValueChange = { newValue -> uInput = newValue },
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties {
                         canFocus = false
@@ -82,8 +105,8 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
 //                keyboardOptions = KeyboardOptions(keyboardType = Decimal)
             )
             TextField(
-                value = secondNum,
-                onValueChange = { newValue -> secondNum = newValue },
+                value = solution,
+                onValueChange = {  },
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties {
                         canFocus = false
@@ -113,8 +136,11 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .weight(1f)
                     .padding(buttonPadding),
                     onClick = {
-                        firstNum = ""
-                        secondNum = ""
+                        priNum = ""
+                        secNum = ""
+                        uInput = ""
+                        calcOpr = '='
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
                     }) {
                     Text(text = "AC", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
@@ -122,7 +148,16 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        if(isFirstNum)isFirstNum = false
+                        else{
+                            if(solution.isNotEmpty()){priNum = solution}
+                            secNum = ""
+                        }
+                        uInput = "$uInput%"
+                        calcOpr = '%'
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "%", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
@@ -137,7 +172,16 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        if(isFirstNum)isFirstNum = false
+                        else{
+                            if(solution.isNotEmpty()){priNum = solution}
+                            secNum = ""
+                        }
+                        uInput = "$uInput/"
+                        calcOpr = '/'
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "/", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
             }
@@ -152,28 +196,49 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "7"
+                        if (isFirstNum) priNum += "7" else secNum += "7"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "7", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "8"
+                        if (isFirstNum) priNum += "8" else secNum += "8"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "8", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "9"
+                        if (isFirstNum) priNum += "9" else secNum += "9"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "9", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        if(isFirstNum)isFirstNum = false
+                        else{
+                            if(solution.isNotEmpty()){priNum = solution}
+                            secNum = ""
+                        }
+                        uInput = "$uInput*"
+                        calcOpr = '*'
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "X", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
             }
@@ -188,28 +253,49 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "4"
+                        if (isFirstNum) priNum += "4" else secNum += "4"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "4", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "5"
+                        if (isFirstNum) priNum += "5" else secNum += "5"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "5", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "6"
+                        if (isFirstNum) priNum += "6" else secNum += "6"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "6", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        if(isFirstNum)isFirstNum = false
+                        else{
+                            if(solution.isNotEmpty()){priNum = solution}
+                            secNum = ""
+                        }
+                        uInput = "$uInput-"
+                        calcOpr = '-'
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "-", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
             }
@@ -224,28 +310,49 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "1"
+                        if (isFirstNum) priNum += "1" else secNum += "1"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "1", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput += "2"
+                        if (isFirstNum) priNum += "2" else secNum += "2"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }){
                     Text(text = "2", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput += "3"
+                        if (isFirstNum) priNum += "3" else secNum += "3"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "3", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        if(isFirstNum)isFirstNum = false
+                        else{
+                            if(solution.isNotEmpty()){priNum = solution}
+                            secNum = ""
+                        }
+                        uInput = "$uInput+"
+                        calcOpr = '+'
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "+", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
             }
@@ -260,28 +367,48 @@ fun CalculatorApp( modifier: Modifier = Modifier) {
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "00"
+                        if (isFirstNum) priNum += "00" else secNum += "00"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "00", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "0"
+                        if (isFirstNum) priNum += "0" else secNum += "0"
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "0", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {
+                        uInput = uInput + "."
+                        if (isFirstNum) priNum += "." else secNum += "."
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = ".", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
                 Button(modifier = Modifier.fillMaxHeight(buttonHeight)
                     .fillMaxWidth(buttonWidth)
                     .weight(1f)
                     .padding(buttonPadding),
-                    onClick = {}) {
+                    onClick = {if(isFirstNum)isFirstNum = false
+                    else{
+                        if(solution.isNotEmpty()){priNum = solution}
+                        secNum = ""
+                    }
+                        uInput = solution
+                        calcOpr = '='
+                        solution = chkSolution(pNum = priNum, sNum = secNum, symbol = calcOpr)
+                    }) {
                     Text(text = "=", fontSize = textScale, modifier = Modifier.padding(0.dp))
                 }
             }
